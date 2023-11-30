@@ -233,3 +233,42 @@ function formulario_cabecalho(){
 		acf_form_head();
 	}
 }
+
+function insert_data_into_db() {
+    global $wpdb;
+
+    // Your table name
+    $table_name = $wpdb->prefix . 'postagens';
+
+    // Retrieve values from the AJAX request
+    $postId = sanitize_text_field($_POST['postId']);
+    $dateTime = sanitize_text_field($_POST['dateTime']);
+	$emoji = sanitize_text_field($_POST['emoji']);
+    $entryText = sanitize_text_field($_POST['entryText']);
+    // Add more columns as needed
+
+    // Sample data to insert into the database
+    $data_to_insert = array(
+        'postId' => $postId,
+        'dateTime' => $dateTime,
+		'emoji' => $emoji,
+        'entryText' => $entryText,
+        // Add more columns and values as needed
+    );
+
+    // Insert data into the table
+    $wpdb->insert($table_name, $data_to_insert);
+
+    // Check for errors
+    if ($wpdb->last_error) {
+        error_log($wpdb->last_error);
+        wp_send_json_error('Database error occurred');
+    }
+
+    wp_send_json_success('Data inserted successfully');
+	wp_die();
+}
+
+// Hook this function to an AJAX action
+add_action('wp_ajax_insert_session', 'insert_data_into_db');
+add_action('wp_ajax_nopriv_insert_session', 'insert_data_into_db');
