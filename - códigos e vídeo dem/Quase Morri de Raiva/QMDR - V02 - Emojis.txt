@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jogo "Quase Morri de Raiva"</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        #tela-principal {
+            display: flex;
+            flex-direction: column; /* Para empilhar verticalmente */
+            align-items: center;
+            justify-content: center;
+            height: 80vh; /* Ajuste a altura de acordo com suas preferências */
+        }
+
+        .cartas-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinhamento vertical no topo */
+            gap: 40px; /* Espaço entre as cartas e os títulos */
+        }
+
+        .carta {
+            display: flex;
+            flex-direction: column; /* Para alinhar o título acima da imagem */
+            align-items: center;
+        }
+
+        img {
+            width: 200px; /* Tamanho das imagens */
+            height: auto; /* Mantém a proporção da imagem */
+        }
+
+        #sortear-button {
+            margin-top: 20px; /* Espaço entre as cartas e o botão */
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Início -->
+    <div id="tela-inicio">
+        <h1>Como Jogar</h1>
+        <p>Clique em SORTEAR CARTAS. Três cartas serão sorteadas. Construa uma história com os elementos que aparecem nas cartas.</p>
+        <button id="jogar-button">Jogar</button>
+    </div>
+
+    <!-- Tela Principal -->
+    <div id="tela-principal" style="display: none;">
+        <div class="cartas-container">
+            <!-- Tela Azul -->
+            <div id="tela-azul" class="carta">
+                <h2>Emoção</h2>
+                <img id="carta-emocao" src="" alt="">
+            </div>
+
+            <!-- Tela Vermelha -->
+            <div id="tela-vermelha" class="carta">
+                <h2>Lugar</h2>
+                <img id="carta-lugar" src="" alt="">
+            </div>
+
+            <!-- Tela Amarela -->
+            <div id="tela-amarela" class="carta">
+                <h2>Coisa</h2>
+                <img id="carta-objeto" src="" alt="">
+            </div>
+        </div>
+
+        <button id="sortear-button">Sortear Cartas</button>
+    </div>
+
+    <script>
+        // Função para sortear uma carta aleatória
+        function sortearCarta(cartas) {
+            const indice = Math.floor(Math.random() * cartas.length);
+            return cartas[indice];
+        }
+
+        // Elementos HTML
+        const telaInicio = document.getElementById('tela-inicio');
+        const telaPrincipal = document.getElementById('tela-principal');
+        const cartaEmocao = document.getElementById('carta-emocao');
+        const cartaLugar = document.getElementById('carta-lugar');
+        const cartaCoisa = document.getElementById('carta-objeto');
+        const jogarButton = document.getElementById('jogar-button');
+        const sortearButton = document.getElementById('sortear-button');
+
+        // Quando o botão "Jogar" é clicado, exibe a tela principal
+        jogarButton.addEventListener('click', () => {
+            telaInicio.style.display = 'none';
+            telaPrincipal.style.display = 'flex';
+        });
+
+        // Quando o botão "Sortear Cartas" é clicado
+        sortearButton.addEventListener('click', () => {
+            // Aqui você pode atualizar as imagens com os URLs reais do ACF.
+            // Certifique-se de que os URLs das imagens estão corretos.
+            const imagensEmocao = [
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-triste.png',
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-feliz.png',
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-raiva.png'
+            ];
+
+            const imagensLugar = [
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-escola.png',
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-casa.png',
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-igreja.png'
+            ];
+
+            const imagensCoisa = [
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-mao.png',
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-bola.png',
+                'http://localhost/cuidado_circular/wp-content/uploads/2023/11/carta-sapato.png'
+            ];
+
+            const cartaEmocaoSorteada = sortearCarta(imagensEmocao);
+            const cartaLugarSorteada = sortearCarta(imagensLugar);
+            const cartaCoisaSorteada = sortearCarta(imagensCoisa);
+
+            // Atualiza as imagens das cartas sorteadas
+            cartaEmocao.src = cartaEmocaoSorteada;
+            cartaLugar.src = cartaLugarSorteada;
+            cartaCoisa.src = cartaCoisaSorteada;
+        });
+    </script>
+</body>
+</html>

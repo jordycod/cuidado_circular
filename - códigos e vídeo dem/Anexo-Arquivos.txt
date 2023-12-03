@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Anexos</title>
+  <style>
+    .attachments {
+      width: 80%;
+      margin: 20px auto;
+    }
+    .attachment {
+      display: inline-block;
+      width: 100px;
+      margin: 10px;
+      text-align: center;
+      position: relative; /* Para posicionar os ícones */
+    }
+    .attachment img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+    }
+    .attachment p {
+      margin: 5px 0;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .download-icon, .delete-icon {
+      position: absolute;
+      display: none;
+      cursor: pointer;
+    }
+    .download-icon {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 255, 0.7);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .download-icon::before {
+      content: "\2B07"; /* Unicode do ícone de download */
+      font-size: 15px;
+    }
+    .delete-icon {
+      top: 0;
+      right: 0;
+      background-color: rgba(255, 0, 0, 0.7);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 12px;
+      line-height: 20px;
+      color: white;
+    }
+    .delete-icon::before {
+      content: "X";
+    }
+    .attachment:hover .download-icon,
+    .attachment:hover .delete-icon {
+      display: block; /* Exibir os ícones ao passar o mouse */
+    }
+  </style>
+</head>
+<body>
+  <input type="file" id="fileInput">
+  <!--<button onclick="document.getElementById('fileInput').click()">Anexar arquivo</button>-->
+  <div class="attachments" id="attachmentList"></div>
+
+  <script>
+    // Funções de manipulação de anexos e localStorage
+
+    function extractPostIdFromURL() {
+    const pathArray = window.location.pathname.split('/');
+    return pathArray[pathArray.length - 2]; // Retorna o penúltimo elemento da URL (o ID do post)
+}
+    
+    function saveToLocalStorage(file, data, postId) {
+  const key = `attachments_${postId}`;
+  const attachments = JSON.parse(localStorage.getItem(key)) || [];
+  const attachmentObject = { name: file.name, data: data };
+  attachments.push(attachmentObject);
+
+  try {
+    localStorage.setItem(key, JSON.stringify(attachments));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+      // Limpar os anexos mais antigos para liberar espaço
+      // Supondo que você queira manter apenas os últimos 10 anexos
+      if (attachments.length > 10) {
+        const newAttachments = attachments.slice(attachments.length - 10);
+        localStorage.setItem(key, JSON.stringify(newAttachments));
+      } else {
+        // Se não for possível reduzir o número de anexos armazenados, considerar outras abordagens
+        console.error('O armazenamento está cheio e não foi possível salvar o anexo.');
+      }
+    } else {
+      console.error('Erro ao salvar o anexo:', e);
+    }
+  }
+}
+
+    // Função para anexar arquivo
+    function attachFileHandler(event) {
+      const files = event.target.files;
+
+      if (files.length === 0) {
+        return;
+      }
+
+      const postId = extractPostIdFromURL();
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        readAndDisplayFile(file, postId);
+        // Chamar a função saveToLocalStorage() aqui para salvar os arquivos
+        saveToLocalStorage(file, 'file data', postId);
+      }
+
+      event.target.value = null;
+    }
+
+    // Função para excluir anexo
+    function deleteAttachmentHandler(attachment, postId) {
+      if (confirm('Tem certeza que deseja excluir este anexo?')) {
+        attachment.remove();
+        const updatedAttachments = getUpdatedAttachments(postId, attachment.dataset.fileName);
+        updateLocalStorage(postId, updatedAttachments);
+      }
+    }
+
+    // Função para ler e exibir o arquivo
+    function readAndDisplayFile(file, postId) {
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+        const attachmentList = document.getElementById('attachmentList');
+        const attachmentDiv = createAttachmentDiv(file, event.target.result, postId);
+
+        attachmentList.appendChild(attachmentDiv);
+        saveToLocalStorage(file, event.target.result, postId);
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    // Função para criar a estrutura do anexo na página
+    function createAttachmentDiv(file, data, postId) {
+      const attachmentDiv = document.createElement('div');
+      attachmentDiv.classList.add('attachment');
+
+      const img = document.createElement('img');
+      img.src = data;
+
+      const fileName = document.createElement('p');
+      fileName.textContent = file.name;
+      fileName.onclick = function() {
+        downloadFile(data, file.name);
+      };
+
+      const deleteIcon = document.createElement('div');
+      deleteIcon.classList.add('delete-icon');
+      deleteIcon.onclick = function() {
+        deleteAttachmentHandler(attachmentDiv, postId);
+      };
+
+      attachmentDiv.dataset.fileName = file.name;
+      attachmentDiv.appendChild(img);
+      attachmentDiv.appendChild(fileName);
+      attachmentDiv.appendChild(deleteIcon);
+
+      return attachmentDiv;
+    }
+
+    // Função para download do arquivo
+    function downloadFile(data, fileName) {
+      const anchor = document.createElement('a');
+      anchor.href = data;
+      anchor.download = fileName;
+      anchor.click();
+    }
+
+    // Função para obter os anexos atualizados após a exclusão
+    function getUpdatedAttachments(postId, fileNameToDelete) {
+      const key = `attachments_${postId}`;
+      const attachments = JSON.parse(localStorage.getItem(key)) || [];
+      return attachments.filter(attachment => attachment.name !== fileNameToDelete);
+    }
+
+    // Função para atualizar o localStorage com a lista atualizada de anexos
+    function updateLocalStorage(postId, attachments) {
+      const key = `attachments_${postId}`;
+      localStorage.setItem(key, JSON.stringify(attachments));
+    }
+
+    // Função para exibir os anexos salvos ao carregar a página
+    function displayAttachments(attachments, postId) {
+      const attachmentList = document.getElementById('attachmentList');
+
+      attachments.forEach(attachmentData => {
+        const attachmentDiv = createAttachmentDivFromData(attachmentData, postId);
+        attachmentList.appendChild(attachmentDiv);
+      });
+    }
+
+    // Função para criar o elemento do anexo a partir dos dados salvos no localStorage
+    function createAttachmentDivFromData(attachmentData, postId) {
+      const attachmentDiv = createAttachmentDiv(
+        { name: attachmentData.name },
+        attachmentData.data,
+        postId
+      );
+      return attachmentDiv;
+    }
+
+    // Delegação de eventos
+    document.getElementById('fileInput').addEventListener('change', attachFileHandler);
+    document.getElementById('attachButton').addEventListener('click', function() {
+      document.getElementById('fileInput').click();
+    });
+
+    // Função para obter os anexos salvos no localStorage
+    function getAttachmentsFromLocalStorage(postId) {
+      const key = `attachments_${postId}`;
+      return JSON.parse(localStorage.getItem(key)) || [];
+    }
+
+    // Chamada das funções ao carregar a página
+    window.onload = function () {
+      const postId = extractPostIdFromURL();
+      displayAttachmentsOnLoad(postId);
+    };
+
+    // Função para exibir os anexos salvos ao carregar a página
+    function displayAttachmentsOnLoad(postId) {
+      const attachments = getAttachmentsFromLocalStorage(postId);
+      displayAttachments(attachments, postId);
+    }
+  </script>
+</body>
+</html>

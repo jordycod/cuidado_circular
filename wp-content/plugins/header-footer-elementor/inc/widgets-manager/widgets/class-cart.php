@@ -630,7 +630,7 @@ class Cart extends Widget_Base {
 						<div class="hfe-cart-menu-wrap-default">
 							<?php if ( null !== WC()->cart ) { ?>
 								<span class="hfe-cart-count">
-									<?php echo WC()->cart->get_cart_contents_count(); ?>
+									<?php echo esc_html( WC()->cart->get_cart_contents_count() ); ?>
 								</span>
 							<?php } ?>
 						</div>
@@ -646,7 +646,7 @@ class Cart extends Widget_Base {
 									<?php echo WC()->cart->get_cart_subtotal(); ?>
 								</span>
 							<?php } ?>
-							<span class="elementor-button-icon" data-counter="<?php echo ( null !== WC()->cart ) ? WC()->cart->get_cart_contents_count() : ''; ?>">
+							<span class="elementor-button-icon" data-counter="<?php echo ( null !== WC()->cart ) ? esc_attr( WC()->cart->get_cart_contents_count() ) : ''; ?>">
 								<i class="eicon" aria-hidden="true"></i>
 								<span class="elementor-screen-only">
 									<?php _e( 'Cart', 'header-footer-elementor' ); ?>

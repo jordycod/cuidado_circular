@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro de Sessões</title>
+    <style>
+        /* Estilos CSS aqui */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        #emoji-container, #emoji-container-final {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px
+        }
+
+        .emoji {
+            font-size: 24px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        #entry-container, #diary-entries {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #entry-title-history {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        #entry-text {
+            width: calc(100%); /* Ajuste para considerar o padding e margem dos botões */
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 15px;
+        }
+        
+        /* Alinhar botões de Salvar e Limpar Emoções */
+        .button-wrapper { 
+            display: flex;
+            justify-content: left;
+            width: 100%;
+        }
+
+        .action-button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background-color: #555;
+        }
+
+        #entries-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #entries-list li {
+            margin: 10px 0;
+            font-size: 18px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+         /* Estilos para os campos de filtro */
+        #filter-container {
+            background-color: #fff;
+            padding: 20px;
+            margin: 0px auto;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #filter-container label {
+            width: 30%;
+            font-size: 15px;
+            text-align: right;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        #filter-container select {
+            width: 40%;
+            padding: 10px;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        #filter-container button {
+            width: 30%;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 20px;
+        }
+
+        #selected-emoji {
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        /* Estilos para a lista de palavras mais frequentes */
+        #frequent-words-list {
+            background-color: #fff;
+            padding: 20px;
+            margin: 0 auto; /* Ajuste de margem */
+            width: 80%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .frequent-word {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        #frequent-words-list h3 {
+            margin-bottom: 10px;
+        }
+        
+        #clear-history-button {
+            background-color: #FF0000; /* Cor de fundo vermelha */
+            color: #FFF; /* Cor do texto branco */
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-left: 0px;
+            cursor: pointer;
+        }
+        
+        #clear-history-button:hover {
+            background-color: #CC0000; /* Cor de fundo vermelha escura no hover */
+        }
+    </style>
+</head>
+<body>
+   <!--  <h1>Meu Diário de Sessões</h1> -->
+    <div id="entry-paciente">
+        
+    <div id="entry-container">
+        <h3>Emoção Inicial:</h3>
+        <div id="emoji-container">
+            <div class="emoji" data-emoji="😊">😊</div>
+            <div class="emoji" data-emoji="😢">😢</div>
+            <div class="emoji" data-emoji="😡">😡</div>
+            <div class="emoji" data-emoji="😍">😍</div>
+            <div class="emoji" data-emoji="😴">😴</div>
+        </div>
+        <div id="selected-emoji"></div>
+        <textarea id="entry-text" placeholder="Descreva a sessão"></textarea>
+        <h3>Emoção Final:</h3>
+        <div id="emoji-container-final">
+            <div class="emoji" data-emoji="😊">😊</div>
+            <div class="emoji" data-emoji="😢">😢</div>
+            <div class="emoji" data-emoji="😡">😡</div>
+            <div class="emoji" data-emoji="😍">😍</div>
+            <div class="emoji" data-emoji="😴">😴</div>
+        </div>
+        <div class="button-wrapper">
+            <div id="entry-container-final">
+        </div>
+        <div id="selected-emoji-final"></div>
+    </div>
+    <p></p>
+    <p></p>
+            <button id="save-button" class="action-button">Salvar</button>
+            <button id="clear-button" class="action-button">Limpar</button>
+        </div>
+    </div>
+
+    
+
+    <div id="frequent-words-list">
+        <h3>Palavras mais frequentes:</h3>
+        <!-- Lista de palavras frequentes -->
+    </div>
+    
+    <div id="diary-entries">
+        <div id="entry-title-history"> 
+        <h3>Histórico de Sessões</h3>
+        <button id="clear-history-button" class="action-button">Limpar Histórico</button>
+        </div>
+        <div id="filter-container">
+            <label for="month-filter">Mês:</label>
+            <select id="month-filter">
+                <option value="">Nenhum</option>
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+            <label for="emoji-filter">Emoção:</label>
+            <select id="emoji-filter">
+                <option value="">Nenhum</option>
+                <option value="😊">😊 Feliz</option>
+                <option value="😢">😢 Triste</option>
+                <option value="😡">😡 Zangado</option>
+                <option value="😍">😍 Amoroso</option>
+                <option value="😴">😴 Apático</option>
+            </select>
+            <button id="filter-button" class="action-button">Filtrar</button>
+        </div>
+        <ul id="entries-list">
+            <!-- As entradas do diário serão exibidas aqui -->
+        </ul>
+    </div>
+
+    <script>
+    
+function filterEntries() {
+    const selectedMonth = document.getElementById("month-filter").value;
+    const selectedEmoji = document.getElementById("emoji-filter").value;
+    const entries = document.getElementById("entries-list").getElementsByTagName("li");
+
+    for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const entryText = entry.textContent || entry.innerText;
+        const containsMonth = selectedMonth === "" || entryText.includes(`/${selectedMonth}/`);
+        const containsEmoji = selectedEmoji === "" || entryText.includes(selectedEmoji);
+
+        if (containsMonth && containsEmoji) {
+            entry.style.display = "block";
+        } else {
+            entry.style.display = "none";
+        }
+    }
+}
+
+const filterButton = document.getElementById("filter-button");
+filterButton.addEventListener("click", filterEntries);
+       // Selecione todos os emojis e adicione um event listener para cada um
+
+// Event listeners para os emojis da "Emoção Inicial" e "Emoção Final"
+        const emojisInicial = document.querySelectorAll('#emoji-container .emoji');
+        const emojisFinal = document.querySelectorAll('#emoji-container-final .emoji');
+
+        emojisInicial.forEach(emoji => {
+            emoji.addEventListener('click', () => {
+                const selectedEmojiDiv = document.getElementById('selected-emoji');
+                selectedEmojiDiv.textContent = emoji.textContent; // Atualiza o emoji selecionado
+            });
+        });
+
+        emojisFinal.forEach(emoji => {
+            emoji.addEventListener('click', () => {
+                const selectedEmojiFinalDiv = document.getElementById('selected-emoji-final');
+                selectedEmojiFinalDiv.textContent = emoji.textContent; // Atualiza o emoji final selecionado
+                const entryTextArea = document.getElementById('entry-text');
+                const selectedEmojiFinal = selectedEmojiFinalDiv.textContent;
+
+            });
+        }); 
+
+function findMostFrequentWords() {
+    const allEntries = document.getElementById("entries-list").innerText.toLowerCase().split(/[^\w']+/).filter(word => isNaN(word) && word !== "data" && word !== "hora" && word.length > 2 && !['emoji', 'inicial', 'final'].includes(word)); // Filtrar emojis e palavras indesejadas
+ // Considera apenas palavras com mais de 2 caracteres
+    const wordsCount = {};
+    const phrasesCount = {};
+
+    for (let i = 0; i < allEntries.length; i++) {
+        const words = allEntries[i].split(' ');
+
+        for (let j = 1; j <= words.length; j++) {
+            for (let k = 0; k < words.length - j + 1; k++) {
+                const wordSequence = words.slice(k, k + j).join(' ');
+                if (wordSequence.length <= 20) { // Limite o tamanho da sequência
+                    if (wordsCount[wordSequence]) {
+                        wordsCount[wordSequence]++;
+                    } else {
+                        wordsCount[wordSequence] = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    const sortedWords = Object.keys(wordsCount).sort((a, b) => wordsCount[b] - wordsCount[a]).slice(0, 5);
+
+    const topWords = sortedWords.map(word => `${word} (${wordsCount[word]} vezes)`);
+
+    const allText = allEntries.join(' '); // Junta todas as palavras com espaços para formar um texto completo
+
+    for (let j = 40; j <= allText.length; j++) {
+        for (let k = 0; k < allText.length - j + 1; k++) {
+            const phraseSequence = allText.slice(k, k + j);
+            if (phraseSequence.length <= 40) { // Limite o tamanho da sequência de frase
+                if (phrasesCount[phraseSequence]) {
+                    phrasesCount[phraseSequence]++;
+                } else {
+                    phrasesCount[phraseSequence] = 1;
+                }
+            }
+        }
+    }
+
+    const sortedPhrases = Object.keys(phrasesCount).sort((a, b) => phrasesCount[b] - phrasesCount[a]).slice(0, 5);
+
+    const phrasesResult = sortedPhrases.map(phrase => `${phrase} (${phrasesCount[phrase]} vezes)`);
+
+    return [...topWords, ...phrasesResult];
+}
+
+function updateFrequentWords() {
+    const mostFrequentWords = findMostFrequentWords();
+    const wordsList = document.getElementById("frequent-words-list");
+    wordsList.innerHTML = "<h3>Palavras e Frases mais frequentes:</h3>"; // Adiciona o título
+    let individualWordCount = 0; // Variável para contar as palavras individuais
+
+    mostFrequentWords.forEach(word => {
+        const listItem = document.createElement("li");
+        listItem.textContent = word;
+        wordsList.appendChild(listItem);
+
+        // Adiciona um parágrafo após a quinta palavra individual
+        if (word.includes("(")) { // Verifica se é uma palavra individual
+            individualWordCount++;
+            if (individualWordCount === 5) {
+                const paragraph = document.createElement("p");
+                wordsList.appendChild(paragraph);
+            }
+        }
+    });
+}
+
+function getCurrentDateTime() {
+            const now = new Date();
+            const date = now.toLocaleDateString();
+            const time = now.toLocaleTimeString();
+            return { date, time }; // Retorna um objeto com data e hora separadas
+        }
+
+        // Função para obter as entradas salvas no localStorage
+        function getSavedEntries() {
+            const savedEntries = localStorage.getItem('diaryEntries');
+            return savedEntries ? JSON.parse(savedEntries) : [];
+        }
+
+        // Função para salvar as entradas no localStorage
+        function saveEntries(entries) {
+            localStorage.setItem('diaryEntries', JSON.stringify(entries));
+        }
+
+function updateEntriesOnLoad() {
+        const entries = getSavedEntries();
+        const entriesList = document.getElementById("entries-list");
+
+        entriesList.innerHTML = "";
+
+        entries.forEach(entry => {
+            const parts = entry.split(': ');
+        const dateTime = parts[0].split(' | ');
+        const formattedEntry = `${dateTime[0]} | ${dateTime[1]}: ${parts[1]}`;
+            
+            const listItem = document.createElement("li");
+            listItem.textContent = entry;
+            entriesList.appendChild(listItem);
+        });
+
+document.getElementById('clear-history-button').addEventListener('click', clearHistory);
+
+function clearHistory() {
+    if (confirm('Tem certeza que deseja limpar o histórico de sessões?')) {
+        localStorage.removeItem('diaryEntries');
+        updateEntriesOnLoad();
+        updateFrequentWords();
+    }
+}
+        updateFrequentWords(); // Atualiza as palavras mais frequentes após carregar as entradas
+    }
+
+    window.onload = function () {
+        updateEntriesOnLoad();
+    };
+
+
+function addEntry() {
+            
+            
+            const entryText = document.getElementById('entry-text').value;
+            const selectedEmoji = document.getElementById('selected-emoji').textContent;
+            const selectedFinalEmoji = document.getElementById('selected-emoji-final').textContent; // Novo
+
+            if (!entryText || !selectedEmoji || !selectedFinalEmoji) { // Modificado para incluir a nova verificação
+                alert('Por favor, selecione um emoji inicial e final, e insira um texto para a entrada.');
+                return;
+            }
+
+            const dateTime = getCurrentDateTime();
+            const postId = extractPostIdFromURL();
+            const entry = `${dateTime.date} • ${dateTime.time} ••• Emoção Inicial: ${selectedEmoji} • Emoção Final: ${selectedFinalEmoji} ••• ${entryText}`; // Modificado para incluir ambos os emojis
+
+            const entries = getSavedEntries(postId);
+            entries.push(entry);
+            saveEntries(entries, postId);
+
+            document.getElementById('entry-text').value = '';
+            document.getElementById('selected-emoji').textContent = '';
+            document.getElementById('selected-emoji-final').textContent = ''; // Limpa o emoji final após salvar
+
+            updateEntriesOnLoad(postId);
+            updateFrequentWords();
+        }
+
+function extractPostIdFromURL() {
+    const pathArray = window.location.pathname.split('/');
+    return pathArray[pathArray.length - 2]; // Retorna o penúltimo elemento da URL (o ID do post)
+}
+
+function getSavedEntries(postId) {
+    const savedEntries = localStorage.getItem(`diaryEntries_${postId}`); // Usa o ID do post como parte da chave
+    return savedEntries ? JSON.parse(savedEntries) : [];
+}
+
+function saveEntries(entries, postId) {
+    localStorage.setItem(`diaryEntries_${postId}`, JSON.stringify(entries)); // Usa o ID do post como parte da chave
+}
+
+function updateEntriesOnLoad(postId) {
+    const entries = getSavedEntries(postId);
+    const entriesList = document.getElementById("entries-list");
+    entriesList.innerHTML = "";
+
+    entries.forEach(entry => {
+        const parts = entry.split(': ');
+        const dateTime = parts[0].split(' | ');
+        const formattedEntry = `${dateTime[0]} | ${dateTime[1]}: ${parts[1]}`;
+            
+        const listItem = document.createElement("li");
+        listItem.textContent = entry;
+        entriesList.appendChild(listItem);
+    });
+
+    document.getElementById('clear-history-button').addEventListener('click', function() {
+        clearHistory(postId);
+    });
+
+    updateFrequentWords();
+}
+
+function clearHistory(postId) {
+    if (confirm('Tem certeza que deseja limpar o histórico de sessões?')) {
+        localStorage.removeItem(`diaryEntries_${postId}`);
+        updateEntriesOnLoad(postId);
+        updateFrequentWords();
+    }
+}
+
+window.onload = function () {
+    const postId = extractPostIdFromURL();
+    updateEntriesOnLoad(postId);
+};
+
+
+// Event listener para o botão "Salvar"
+        document.getElementById('save-button').addEventListener('click', addEntry);
+
+        // Event listener para o botão "Limpar"
+        document.getElementById('clear-button').addEventListener('click', clearEntry);
+
+        // Função para limpar o texto da entrada e o emoji selecionado
+        function clearEntry() {
+            document.getElementById('entry-text').value = '';
+            document.getElementById('selected-emoji').textContent = '';
+            document.getElementById('selected-emoji-final').textContent = '';
+        }
+
+updateFrequentWords(); // Chamar ao carregar a página para exibir inicialmente as palavras mais frequentes
+filterEntries(); // Chamar para inicialmente filtrar os itens com base nos filtros selecionados
+    </script>
+</body>
+</html>

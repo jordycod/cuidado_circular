@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jogo "Quase Morri de Raiva"</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        #tela-principal {
+            display: flex;
+            flex-direction: column; /* Para empilhar verticalmente */
+            align-items: center;
+            justify-content: center;
+            height: 80vh; /* Ajuste a altura de acordo com suas preferências */
+        }
+
+        .cartas-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .carta {
+            margin: 0 20px;
+            font-size: 50px; /* Tamanho dos emojis */
+        }
+
+        #sortear-button {
+            margin-top: 20px; /* Espaço entre as cartas e o botão */
+        }
+
+        #registro {
+            margin-top: 20px;
+        }
+
+        #tela-vermelha p { /* Define o tamanho para as cartas de lugar */
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Início -->
+    <div id="tela-inicio">
+        <h1>Como Jogar</h1>
+        <p>Clique em SORTEAR CARTAS. Três cartas serão sorteadas. Construa uma história com os elementos que aparecem nas cartas.</p>
+        <button id="jogar-button">Jogar</button>
+    </div>
+
+    <!-- Tela Principal -->
+    <div id="tela-principal" style="display: none;">
+        <div class="cartas-container">
+            <!-- Tela Azul -->
+            <div id="tela-azul" class="carta">
+                <h2>Emoção</h2>
+                <p id="carta-emocao"></p>
+            </div>
+
+            <!-- Tela Vermelha -->
+            <div id="tela-vermelha" class="carta">
+                <h2>Lugar</h2>
+                <p id="carta-lugar"></p>
+            </div>
+
+            <!-- Tela Amarela -->
+            <div id="tela-amarela" class="carta">
+                <h2>Coisa</h2>
+                <p id="carta-objeto"></p>
+            </div>
+        </div>
+
+        <button id="sortear-button">Sortear Cartas</button>
+
+        <div id="registro">
+            <label for="data-hora">Data e Hora do Sorteio:</label>
+            <input type="text" id="data-hora" disabled>
+            <br>
+        </div>
+    </div>
+
+    <script>
+        // Função para sortear uma carta aleatória
+        function sortearCarta(cartas) {
+            const indice = Math.floor(Math.random() * cartas.length);
+            return cartas[indice];
+        }
+
+        // Elementos HTML
+        const telaInicio = document.getElementById('tela-inicio');
+        const telaPrincipal = document.getElementById('tela-principal');
+        const cartaEmocao = document.getElementById('carta-emocao');
+        const cartaLugar = document.getElementById('carta-lugar');
+        const cartaCoisa = document.getElementById('carta-objeto');
+        const jogarButton = document.getElementById('jogar-button');
+        const sortearButton = document.getElementById('sortear-button');
+        const dataHora = document.getElementById('data-hora');
+        const anotacoes = document.getElementById('anotacoes');
+
+        // Quando o botão "Jogar" é clicado, exibe a tela principal
+        jogarButton.addEventListener('click', () => {
+            telaInicio.style.display = 'none';
+            telaPrincipal.style.display = 'flex';
+        });
+
+        // Quando o botão "Sortear Cartas" é clicado
+        sortearButton.addEventListener('click', () => {
+            const now = new Date();
+            const dataFormatada = now.toLocaleString();
+
+            // Aqui você pode manter a lógica para sortear as cartas como anteriormente
+            const cartasEmocao = ['😀', '😢', '😡'];
+            const cartasLugar = ['🏫', '🏠', '⛪'];
+            const cartasCoisa = ['🖐️', '⚽', '👞'];
+
+            const cartaEmocaoSorteada = sortearCarta(cartasEmocao);
+            const cartaLugarSorteada = sortearCarta(cartasLugar);
+            const cartaCoisaSorteada = sortearCarta(cartasCoisa);
+
+            // Exibe as cartas sorteadas nas telas correspondentes
+            cartaEmocao.textContent = cartaEmocaoSorteada;
+            cartaLugar.textContent = cartaLugarSorteada;
+            cartaCoisa.textContent = cartaCoisaSorteada;
+
+            // Atualiza o campo de data/hora com a data atual
+            dataHora.value = dataFormatada;
+        });
+    </script>
+</body>
+</html>
